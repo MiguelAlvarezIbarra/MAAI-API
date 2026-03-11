@@ -13,9 +13,6 @@ export class User {
   @ApiProperty({ example: 'miguel123' })
   username: string;
 
-  @ApiProperty({ example: '123456' })
-  password: string;
-
   @ApiProperty({ example: '2026-03-05T18:30:00.000Z' })
   createdAt: Date;
 }

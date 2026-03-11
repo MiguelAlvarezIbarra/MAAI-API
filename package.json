@@ -32,11 +32,15 @@
     "@prisma/extension-accelerate": "^3.0.1",
     "@types/mysql": "^2.15.27",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@types/pg": "^8.16.0",
 >>>>>>> d012864 (fix: Corrección del CRUD y uso de Swagger)
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
 =======
+=======
+    "bcrypt": "^6.0.0",
+>>>>>>> 4347d41 (fix: Correción del CRUD de usuarios y uso de bcrypt)
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "mysql2": "^3.17.3",
@@ -55,6 +59,7 @@
 >>>>>>> 12c3b4d (fix: Resolución de problemas)
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.7",
     "@types/pg": "^8.18.0",

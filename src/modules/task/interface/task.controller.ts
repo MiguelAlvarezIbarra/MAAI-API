@@ -51,4 +51,11 @@ export class TaskController {
     
     return result;
   }
+
+  @Get('user/:userId')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Obtener tareas por usuario' })
+  public async getTasksByUser(@Param('userId', ParseIntPipe) userId: number): Promise<Task[]> {
+  return await this.taskSvc.getTasksByUser(userId);
+}
 }

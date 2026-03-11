@@ -49,4 +49,12 @@ export class TaskService {
       return false;
     }
   }
+
+  async getTasksByUser(userId: number) {
+  await this.prisma.user.findUniqueOrThrow({ where: { id: userId } }).catch(() => {
+    throw new NotFoundException(`Usuario con ID ${userId} no encontrado`);
+  });
+
+  return this.prisma.task.findMany({ where: { userId } });
+}
 }
