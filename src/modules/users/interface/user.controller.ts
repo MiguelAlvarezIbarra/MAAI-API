@@ -1,45 +1,102 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  HttpException,
+  NotFoundException,
+  InternalServerErrorException,
+  HttpStatus,
+  UseGuards
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('api/user')
-@ApiTags('User', 'Usuarios')
+@ApiTags("Users")
+@UseGuards(AuthGuard)
 export class UserController {
-  constructor(private readonly userSvc: UserService) {}
+  constructor(private userSvc: UserService) { }
 
   @Get()
-  public async getUsers(): Promise<User[]> {
-    return await this.userSvc.getUsers();
+  public async getUser(): Promise<User[]> {
+    try {
+      return await this.userSvc.getUsers();
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener la lista de usuarios');
+    }
   }
 
   @Get(':id')
   @HttpCode(200)
-  public async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return await this.userSvc.getUserById(id);
+  public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<User> {
+    try {
+      const user = await this.userSvc.getUserById(id);
+
+      if (!user) {
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Ocurrió un error al buscar el usuario ${id}`);
+    }
   }
 
   @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiOperation({ summary: 'Insert a user in the db' })
   public async insertUser(@Body() user: CreateUserDto): Promise<User> {
-    const result = await this.userSvc.insertUser(user);
-    if (!result)
-      throw new HttpException('Usuario no registrado', HttpStatus.INTERNAL_SERVER_ERROR);
-    return result;
+    try {
+      
+      const result = await this.userSvc.insertUser(user);
+      if (!result) {
+        throw new InternalServerErrorException("El usuario no pudo ser registrado");
+      }
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException("Error interno al registrar el usuario");
+    }
   }
 
-  @Put(':id')
-  public async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto): Promise<User> {
-    return await this.userSvc.updateUser(id, user);
+  @Put(":id")
+  public async updateUser(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() user: UpdateUserDto
+  ): Promise<User> {
+    try {
+      const result = await this.userSvc.getUserById(id);
+
+       if (!user) {
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      }
+
+      return await this.userSvc.updateUser(id, user);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Error al actualizar el usuario con ID ${id}`);
+    }
   }
 
   @Delete(':id')
-  public async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
+  public async deleteUser(@Param("id", ParseIntPipe) id: number): Promise<boolean> {
     const result = await this.userSvc.deleteUser(id);
-    if (!result)
-      throw new HttpException('No se pudo eliminar el usuario', HttpStatus.NOT_FOUND);
-    return result;
+
+
+    // FIXME: Verificar si el usuario tiene tareas
+    if (!result) {
+      throw new HttpException(``, HttpStatus.NOT_FOUND);
+    }
+    return true;
   }
 }

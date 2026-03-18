@@ -1,75 +1,119 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../../prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UtilService } from 'src/common/services/util.servise';
-
-const omitPassword = { password: true } as const;
-
+import { User } from '../entities/user.entity';
+import { Task } from 'src/generated/prisma/client';
 @Injectable()
 export class UserService {
-  constructor(
-    private prisma: PrismaService,
-    private utilService: UtilService,
-  ) {}
 
-  async getUsers() {
-    return this.prisma.user.findMany({ omit: omitPassword });
+
+  constructor(@Inject('PG_CONNECTION') private db: any, private prisma: PrismaService, private readonly utilSvc: UtilService) { }
+  login(): string {
+    return 'Autenticación correcta';
   }
 
-  async getUserById(id: number) {
+
+
+  private users: any[] = [];
+
+  async getUsers(): Promise<User[]> {
+    const users = await this.prisma.user.findMany(
+      {
+        orderBy: [{ name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          username: true,
+          password: true,
+          createdAt: true
+        }
+      }
+    );
+    return users;
+  }
+
+  async getUserById(id: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      omit: omitPassword
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        username: true,
+        password: false,
+        createdAt: true
+      }
+
     });
-    if (!user) throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+
+    if (user == undefined) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrada`);
+    }
+
     return user;
   }
 
-  async insertUser(dto: CreateUserDto) {
-    const exists = await this.prisma.user.findUnique({ where: { username: dto.username } });
-    if (exists)
-      throw new ConflictException(`El username '${dto.username}' ya está en uso`);
 
-    const hashedPassword = await this.utilService.hashPassword(dto.password);
-
-    return this.prisma.user.create({
-      omit: omitPassword,
-      data: {
-        name: dto.name,
-        lastname: dto.lastname,
-        username: dto.username,
-        password: hashedPassword,
-      },
+  async insertUser(user: CreateUserDto) {
+    const { username, password, ...restOfUser } = user;
+    const sameUser = await this.prisma.user.findUnique({
+      where: { username }
     });
-  }
 
-  async updateUser(id: number, dto: UpdateUserDto) {
-    await this.getUserById(id);
-
-    const data: any = {
-      name: dto.name,
-      lastname: dto.lastname,
-      username: dto.username,
-    };
-
-    if (dto.password) {
-      data.password = await this.utilService.hashPassword(dto.password);
+    if (sameUser) {
+      throw new ConflictException(`El usuario con el username '${username}' ya existe`);
     }
 
-    return this.prisma.user.update({
-      omit: omitPassword,
-      where: { id },
-      data,
+    const encryptedPassword = await this.utilSvc.hashPassword(password);
+
+    const newUser = await this.prisma.user.create({
+      data: {
+        ...restOfUser,
+        username,
+        password: encryptedPassword
+      },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        username: true,
+        createdAt: true
+      }
     });
+
+    return newUser;
+  }
+
+  async updateUser(id: number, userUpdate: UpdateUserDto): Promise<User> {
+    const user = await this.prisma.user.update({
+      where: { id }, data: userUpdate, select: {
+        id: true,
+        name: true,
+        lastname: true,
+        username: true,
+        password: false,
+        createdAt: true
+      }
+    });
+
+    return user;
   }
 
   async deleteUser(id: number): Promise<boolean> {
-    try {
-      await this.prisma.user.delete({ where: { id } });
-      return true;
-    } catch {
-      return false;
-    }
+    const deletedUser = await this.prisma.user.delete({ where: { id } });
+
+    return deletedUser ? true : false;
+  }
+
+
+  async getTaskByUser(id: number): Promise<Task[]> {
+    const tasks = await this.prisma.task.findMany({
+      where: { id: id }
+    });
+
+    return tasks;
   }
 }

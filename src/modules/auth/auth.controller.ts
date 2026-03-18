@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Controller, Get } from '@nestjs/common';
 
 @Controller('auth')
@@ -19,11 +20,21 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 >>>>>>> 20ac81c (feature: Configuración de Login)
+=======
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post
+} from '@nestjs/common';
+import { AuthService } from 'src/modules/auth/auth.service';
+import { LoginDto } from 'src/modules/auth/dto/login.dto';
+
+>>>>>>> 2381343 (fix: Uso de guards y proteccion de rutas)
 
 @Controller('api/auth')
-@ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authSvc: AuthService) {}
+  constructor(private authSvc: AuthService) { }
 
 <<<<<<< HEAD
 }
@@ -31,9 +42,8 @@ export class AuthController {
 =======
   @Post('login')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Iniciar sesión' })
-  public async login(@Body() dto: LoginDto) {
-    return await this.authSvc.login(dto);
+  async login(@Body() loginDto: LoginDto): Promise<any> {
+    return this.authSvc.login(loginDto);
   }
 }
 >>>>>>> 20ac81c (feature: Configuración de Login)
