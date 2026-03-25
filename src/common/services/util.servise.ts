@@ -10,7 +10,7 @@ export class UtilService {
     ) { }
 
 
-    public async hashPassword(password: string): Promise<string> {
+    public async hash(password: string): Promise<string> {
         return await bcrypt.hash(password, 10);
     }
 
@@ -24,13 +24,15 @@ export class UtilService {
             name: user.name,
             lastname: user.lastname,
             username: user.username,
-            created_dt: user.createdAt
+            created_dt: user.created_dt,
+            hash: user.hash
         }
     }
 
 
     public async getPayloadFromJWT(token: string): Promise<any> {
-        return await this.jwtService.verifyAsync(token);
+        const payload = await this.jwtService.verifyAsync(token);
+        return payload;
     }
 
 

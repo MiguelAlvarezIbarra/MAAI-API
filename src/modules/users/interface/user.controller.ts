@@ -23,11 +23,12 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('api/user')
 @ApiTags("Users")
-@UseGuards(AuthGuard)
+
 export class UserController {
   constructor(private userSvc: UserService) { }
 
   @Get()
+  @UseGuards(AuthGuard)
   public async getUser(): Promise<User[]> {
     try {
       return await this.userSvc.getUsers();
@@ -38,6 +39,7 @@ export class UserController {
 
   @Get(':id')
   @HttpCode(200)
+  @UseGuards(AuthGuard)
   public async getUserById(@Param("id", ParseIntPipe) id: number): Promise<User> {
     try {
       const user = await this.userSvc.getUserById(id);

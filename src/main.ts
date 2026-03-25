@@ -2,19 +2,40 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import { AllException } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  //Pipe para realizar la validación de forma global
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+   //Uso de filtros
+   app.useGlobalFilters(new AllException());
+
+  //Configuración de swagger
   const config = new DocumentBuilder()
-    .setTitle('MAAI API')
+    .setTitle('API de Tareas')
     .setDescription('API para la gestión de tareas')
-    .setVersion('1.0.0')
+    .setVersion('1.0')
     .addServer('http://localhost:3000', 'Servidor local')
-    .addServer('https://maai-api.onrender.com', 'Servidor en Render')
-    .addTag('tasks')
+    .addServer('http://dominio.com', 'Servidor de producción')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+
   await app.listen(process.env.PORT ?? 3000);
+
 }
 bootstrap();
+
+//? POSTGRES
+//! npm i pg
+//! npm i @types/pg
+
+//? MYSQL
+//! npm i mysql2
+//! npm i @types/mysql
+
+//! npm i @nestjs/swagger

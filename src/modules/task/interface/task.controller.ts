@@ -1,36 +1,41 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskDto } from '../dto/create-task.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { request } from 'http';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Task } from '../entities/task.entity';
+import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update.task.dto';
-import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/task')
-@ApiTags('Task', 'Tareas')
+@ApiTags("Tareas")
+@UseGuards(AuthGuard)
 export class TaskController {
   constructor(private readonly taskSvc: TaskService) { }
 
   @Get()
-  public async getTask(): Promise<Task[]> {
-    return await this.taskSvc.getTasks();
+  public async getTask(@Req() request: any): Promise<Task[]> {
+    const user = request['user'];
+    return await this.taskSvc.getTasks(user.id);
   }
 
   @Get(':id')
   @HttpCode(200)
-  public async getTaskById(@Param("id", ParseIntPipe) id: number): Promise<Task> {
-    const task = await this.taskSvc.getTaskById(id);
-    console.log("Resultado:", task);
+  public async getTaskById(@Req() request: any, @Param("id", ParseIntPipe) id: number): Promise<Task> {
+    const user = request['user'];
+    const task = await this.taskSvc.getTaskById(id, user.id);
 
     if (task == undefined) {
       throw new HttpException(`Tarea con ID ${id} no encontrada`, HttpStatus.NOT_FOUND);
     }
-    return await this.taskSvc.getTaskById(id);
+    return await this.taskSvc.getTaskById(id, user.id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Crear una nueva tarea' })
-  public async insertTask(@Body() task: CreateTaskDto): Promise<Task> {
-    const result = await this.taskSvc.insertTask(task)
+  @ApiOperation({ summary: 'Insert a task in the db' })
+  public async insertTask(@Req() request: any, @Body() task: CreateTaskDto): Promise<Task> {
+    const user = request['user'];
+    const result = await this.taskSvc.insertTask(task, user.id)
 
     if (result == undefined)
       throw new HttpException("Tarea no registrada", HttpStatus.INTERNAL_SERVER_ERROR)
@@ -38,24 +43,20 @@ export class TaskController {
   }
 
   @Put(":id")
-  public async updateTask(@Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto): Promise<Task> {
-    return await this.taskSvc.updateTask(id, task);
+  public async updateTask(@Req() request: any, @Param("id", ParseIntPipe) id: number, @Body() task: UpdateTaskDto): Promise<Task> {
+    const user = request['user'];
+    return await this.taskSvc.updateTask(id, user.id, task);
   }
 
   @Delete(':id')
-  public async deleteTask(@Param("id", ParseIntPipe) id: number): Promise<boolean> {
-    const result = await this.taskSvc.deleteTask(id);
+  public async deleteTask(@Req() request: any, @Param("id", ParseIntPipe) id: number): Promise<boolean> {
+    try {
+      const user = request['user'];
+      const result = await this.taskSvc.deleteTask(id, user.id);
+    } catch (error) {
+      throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
 
-    if (!result) 
-      throw new HttpException("No se pudo eliminar la tarea", HttpStatus.NOT_FOUND);
-    
-    return result;
+    }
+    return true;
   }
-
-  @Get('user/:userId')
-  @HttpCode(200)
-  @ApiOperation({ summary: 'Obtener tareas por usuario' })
-  public async getTasksByUser(@Param('userId', ParseIntPipe) userId: number): Promise<Task[]> {
-  return await this.taskSvc.getTasksByUser(userId);
-}
 }

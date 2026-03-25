@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  Rol: 'Rol',
   User: 'User',
   Task: 'Task'
 } as const
@@ -401,10 +402,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task"
+    modelProps: "rol" | "user" | "task"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    Rol: {
+      payload: Prisma.$RolPayload<ExtArgs>
+      fields: Prisma.RolFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RolFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RolFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        findFirst: {
+          args: Prisma.RolFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RolFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        findMany: {
+          args: Prisma.RolFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>[]
+        }
+        create: {
+          args: Prisma.RolCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        createMany: {
+          args: Prisma.RolCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RolCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>[]
+        }
+        delete: {
+          args: Prisma.RolDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        update: {
+          args: Prisma.RolUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        deleteMany: {
+          args: Prisma.RolDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RolUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RolUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>[]
+        }
+        upsert: {
+          args: Prisma.RolUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RolPayload>
+        }
+        aggregate: {
+          args: Prisma.RolAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRol>
+        }
+        groupBy: {
+          args: Prisma.RolGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RolGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RolCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RolCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -592,14 +667,25 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const RolScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  status: 'status'
+} as const
+
+export type RolScalarFieldEnum = (typeof RolScalarFieldEnum)[keyof typeof RolScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   lastname: 'lastname',
   username: 'username',
   password: 'password',
+  hash: 'hash',
+  created_dt: 'created_dt',
   refreshToken: 'refreshToken',
-  createdAt: 'createdAt'
+  rol_id: 'rol_id'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -610,8 +696,8 @@ export const TaskScalarFieldEnum = {
   name: 'name',
   description: 'description',
   priority: 'priority',
-  createdAt: 'createdAt',
-  userId: 'userId'
+  created_dt: 'created_dt',
+  user_id: 'user_id'
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -676,6 +762,13 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -686,13 +779,6 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -804,6 +890,7 @@ export type PrismaClientOptions = ({
   comments?: runtime.SqlCommenterPlugin[]
 }
 export type GlobalOmitConfig = {
+  rol?: Prisma.RolOmit
   user?: Prisma.UserOmit
   task?: Prisma.TaskOmit
 }
