@@ -54,4 +54,27 @@ export class AuthService {
       data: { hash }
     })
   }
+
+  async refreshTokens(userId: number, userHash: string): Promise<any> {
+  const user = await this.prisma.user.findUnique({ where: { id: userId } })
+  if (!user || !user.hash) throw new UnauthorizedException('Acceso denegado')
+
+  const hashMatches = await this.utilSvc.checkPassword(userHash, user.hash)
+  if (!hashMatches) throw new UnauthorizedException('Token inválido')
+
+  const payload = await this.utilSvc.getPayload(user)
+  const newRefreshToken = await this.utilSvc.generateToken(payload, '7d')
+  const newHash = await this.utilSvc.hash(newRefreshToken)
+
+  await this.updateHash(user.id, newHash)
+  payload.hash = newHash
+
+  const newAccessToken = await this.utilSvc.generateToken(payload, '1h')
+  await this.prisma.user.update({ where: { id: user.id }, data: { refreshToken: newRefreshToken } })
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken
+  }
+}
 }

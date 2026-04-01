@@ -25,7 +25,8 @@ export class UtilService {
             lastname: user.lastname,
             username: user.username,
             created_dt: user.created_dt,
-            hash: user.hash
+            hash: user.hash,
+            rol_id: user.rol_id
         }
     }
 

@@ -87,25 +87,38 @@ export class UserService {
 }
 
   async updateUser(id: number, userUpdate: UpdateUserDto): Promise<User> {
-    const user = await this.prisma.user.update({
-      where: { id }, data: userUpdate, select: {
-        id: true,
-        name: true,
-        lastname: true,
-        username: true,
-        password: false,
-        created_dt: true
-      }
-    });
-
-    return user;
+  if (userUpdate.password) {
+    userUpdate.password = await this.utilSvc.hash(userUpdate.password)  // ✅
   }
+  const user = await this.prisma.user.update({
+    where: { id },
+    data: userUpdate,
+    select: {
+      id: true,
+      name: true,
+      lastname: true,
+      username: true,
+      password: false,
+      created_dt: true
+    }
+  })
+  return user
+}
 
   async deleteUser(id: number): Promise<boolean> {
-    const deletedUser = await this.prisma.user.delete({ where: { id } });
+  const taskCount = await this.prisma.task.count({
+    where: { user_id: id }
+  })
 
-    return deletedUser ? true : false;
+  if (taskCount > 0) {
+    throw new ConflictException(
+      `No se puede eliminar el usuario porque tiene ${taskCount} tarea${taskCount > 1 ? 's' : ''} pendiente${taskCount > 1 ? 's' : ''}`
+    )
   }
+
+  const deletedUser = await this.prisma.user.delete({ where: { id } })
+  return !!deletedUser
+}
 
   async getTaskByUser(id: number): Promise<Task[]> {
     const tasks = await this.prisma.task.findMany({

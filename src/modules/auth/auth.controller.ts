@@ -33,14 +33,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   public async refreshToken(@Req() request: any) {
-    const userSession = request.user;
-    const user = await this.authSvc.getUserById(userSession.id);
-    if (!user || !user.hash) throw new AppException('Acceso denegado', HttpStatus.FORBIDDEN, '0');
-    if (userSession.hash != user.hash) throw new AppException('Token invalido', HttpStatus.FORBIDDEN, '1');
-    return {
-      access_token: '',
-      refreshToken: ''
-    }
+    const userSession = request.user
+    const user = await this.authSvc.getUserById(userSession.id)
+
+    if (!user || !user.hash) throw new AppException('Acceso denegado', HttpStatus.FORBIDDEN, '0')
+    if (userSession.hash !== user.hash) throw new AppException('Token inválido', HttpStatus.FORBIDDEN, '1')
+
+    return await this.authSvc.refreshTokens(userSession.id, userSession.hash)
   }
 
   @Post('logout')
