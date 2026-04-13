@@ -3,33 +3,59 @@ import {
   Catch, 
   ExceptionFilter, 
   HttpException, 
-  HttpStatus 
+  HttpStatus,
 } from "@nestjs/common";
+import { PrismaService } from "src/prisma.service";
 
 @Catch()
 export class AllException implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        const request = ctx.getRequest();
+  constructor(private readonly prisma: PrismaService) {}
 
-        // Verificamos el status
-        const status = exception instanceof HttpException 
-            ? exception.getStatus() 
-            : HttpStatus.INTERNAL_SERVER_ERROR;
+  async catch(exception: any, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const request = ctx.getRequest();
 
-        // Extraemos el mensaje
-        const message = exception instanceof HttpException 
-            ? exception.getResponse() 
-            : 'Internal server error';
+    const status = exception instanceof HttpException 
+      ? exception.getStatus() 
+      : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        // Enviamos la respuesta estructurada
-        response.status(status).json({
-            statusCode: status,
-            timeStamp: new Date().toISOString(),
-            path: request.url,
-            error: typeof message === 'string' ? message : (message as any).message || message,
-            errorCode: exception.code || 'UNKNOWN_ERROR'
-        });
+    const message = exception instanceof HttpException 
+      ? exception.getResponse() 
+      : 'Internal server error';
+
+    const errorMessage = typeof message === 'string' 
+      ? message 
+      : (message as any).message || message;
+
+    const errorStr = Array.isArray(errorMessage) 
+      ? errorMessage.join(', ') 
+      : String(errorMessage);
+
+    const errorCode = exception.code || 'UNKNOWN_ERROR';
+    const session_id = request.user?.id || null;
+
+    try {
+      await this.prisma.log.create({
+        data: {
+          statusCode: status,
+          timeStamp: new Date(),
+          path: request.url,
+          error: errorStr,
+          errorCode: String(errorCode),
+          session_id,
+        },
+      });
+    } catch (dbError) {
+      console.error('Error guardando log en DB:', dbError);
     }
+
+    response.status(status).json({
+      statusCode: status,
+      timeStamp: new Date().toISOString(),
+      path: request.url,
+      error: errorMessage,
+      errorCode
+    });
+  }
 }

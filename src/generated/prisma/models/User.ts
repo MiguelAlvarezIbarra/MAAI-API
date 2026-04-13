@@ -254,6 +254,7 @@ export type UserWhereInput = {
   rol_id?: Prisma.IntNullableFilter<"User"> | number | null
   tasks?: Prisma.TaskListRelationFilter
   rol?: Prisma.XOR<Prisma.RolNullableScalarRelationFilter, Prisma.RolWhereInput> | null
+  logs?: Prisma.LogListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -268,6 +269,7 @@ export type UserOrderByWithRelationInput = {
   rol_id?: Prisma.SortOrderInput | Prisma.SortOrder
   tasks?: Prisma.TaskOrderByRelationAggregateInput
   rol?: Prisma.RolOrderByWithRelationInput
+  logs?: Prisma.LogOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -285,6 +287,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   rol_id?: Prisma.IntNullableFilter<"User"> | number | null
   tasks?: Prisma.TaskListRelationFilter
   rol?: Prisma.XOR<Prisma.RolNullableScalarRelationFilter, Prisma.RolWhereInput> | null
+  logs?: Prisma.LogListRelationFilter
 }, "id" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -329,6 +332,7 @@ export type UserCreateInput = {
   refreshToken?: string
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   rol?: Prisma.RolCreateNestedOneWithoutUsersInput
+  logs?: Prisma.LogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -342,6 +346,7 @@ export type UserUncheckedCreateInput = {
   refreshToken?: string
   rol_id?: number | null
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  logs?: Prisma.LogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -354,6 +359,7 @@ export type UserUpdateInput = {
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   rol?: Prisma.RolUpdateOneWithoutUsersNestedInput
+  logs?: Prisma.LogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -367,6 +373,7 @@ export type UserUncheckedUpdateInput = {
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   rol_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  logs?: Prisma.LogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -464,6 +471,11 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type UserCreateNestedManyWithoutRolInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutRolInput, Prisma.UserUncheckedCreateWithoutRolInput> | Prisma.UserCreateWithoutRolInput[] | Prisma.UserUncheckedCreateWithoutRolInput[]
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutRolInput | Prisma.UserCreateOrConnectWithoutRolInput[]
@@ -536,6 +548,22 @@ export type UserUpdateOneRequiredWithoutTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTasksInput, Prisma.UserUpdateWithoutTasksInput>, Prisma.UserUncheckedUpdateWithoutTasksInput>
 }
 
+export type UserCreateNestedOneWithoutLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLogsInput, Prisma.UserUncheckedCreateWithoutLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLogsInput, Prisma.UserUncheckedCreateWithoutLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLogsInput
+  upsert?: Prisma.UserUpsertWithoutLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLogsInput, Prisma.UserUpdateWithoutLogsInput>, Prisma.UserUncheckedUpdateWithoutLogsInput>
+}
+
 export type UserCreateWithoutRolInput = {
   name: string
   lastname: string
@@ -545,6 +573,7 @@ export type UserCreateWithoutRolInput = {
   created_dt?: Date | string
   refreshToken?: string
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  logs?: Prisma.LogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRolInput = {
@@ -557,6 +586,7 @@ export type UserUncheckedCreateWithoutRolInput = {
   created_dt?: Date | string
   refreshToken?: string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  logs?: Prisma.LogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRolInput = {
@@ -609,6 +639,7 @@ export type UserCreateWithoutTasksInput = {
   created_dt?: Date | string
   refreshToken?: string
   rol?: Prisma.RolCreateNestedOneWithoutUsersInput
+  logs?: Prisma.LogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTasksInput = {
@@ -621,6 +652,7 @@ export type UserUncheckedCreateWithoutTasksInput = {
   created_dt?: Date | string
   refreshToken?: string
   rol_id?: number | null
+  logs?: Prisma.LogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTasksInput = {
@@ -648,6 +680,7 @@ export type UserUpdateWithoutTasksInput = {
   created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   rol?: Prisma.RolUpdateOneWithoutUsersNestedInput
+  logs?: Prisma.LogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTasksInput = {
@@ -660,6 +693,73 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   rol_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  logs?: Prisma.LogUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutLogsInput = {
+  name: string
+  lastname: string
+  username: string
+  password: string
+  hash?: string | null
+  created_dt?: Date | string
+  refreshToken?: string
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  rol?: Prisma.RolCreateNestedOneWithoutUsersInput
+}
+
+export type UserUncheckedCreateWithoutLogsInput = {
+  id?: number
+  name: string
+  lastname: string
+  username: string
+  password: string
+  hash?: string | null
+  created_dt?: Date | string
+  refreshToken?: string
+  rol_id?: number | null
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLogsInput, Prisma.UserUncheckedCreateWithoutLogsInput>
+}
+
+export type UserUpsertWithoutLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLogsInput, Prisma.UserUncheckedUpdateWithoutLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLogsInput, Prisma.UserUncheckedCreateWithoutLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLogsInput, Prisma.UserUncheckedUpdateWithoutLogsInput>
+}
+
+export type UserUpdateWithoutLogsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  rol?: Prisma.RolUpdateOneWithoutUsersNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLogsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
+  rol_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyRolInput = {
@@ -682,6 +782,7 @@ export type UserUpdateWithoutRolInput = {
   created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  logs?: Prisma.LogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolInput = {
@@ -694,6 +795,7 @@ export type UserUncheckedUpdateWithoutRolInput = {
   created_dt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  logs?: Prisma.LogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutRolInput = {
@@ -714,10 +816,12 @@ export type UserUncheckedUpdateManyWithoutRolInput = {
 
 export type UserCountOutputType = {
   tasks: number
+  logs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | UserCountOutputTypeCountTasksArgs
+  logs?: boolean | UserCountOutputTypeCountLogsArgs
 }
 
 /**
@@ -737,6 +841,13 @@ export type UserCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Exte
   where?: Prisma.TaskWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LogWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -750,6 +861,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   rol_id?: boolean
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   rol?: boolean | Prisma.User$rolArgs<ExtArgs>
+  logs?: boolean | Prisma.User$logsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -795,6 +907,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   rol?: boolean | Prisma.User$rolArgs<ExtArgs>
+  logs?: boolean | Prisma.User$logsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -809,6 +922,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     tasks: Prisma.$TaskPayload<ExtArgs>[]
     rol: Prisma.$RolPayload<ExtArgs> | null
+    logs: Prisma.$LogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1216,6 +1330,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tasks<T extends Prisma.User$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rol<T extends Prisma.User$rolArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$rolArgs<ExtArgs>>): Prisma.Prisma__RolClient<runtime.Types.Result.GetResult<Prisma.$RolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  logs<T extends Prisma.User$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1690,6 +1805,30 @@ export type User$rolArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs =
    */
   include?: Prisma.RolInclude<ExtArgs> | null
   where?: Prisma.RolWhereInput
+}
+
+/**
+ * User.logs
+ */
+export type User$logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Log
+   */
+  select?: Prisma.LogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Log
+   */
+  omit?: Prisma.LogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LogInclude<ExtArgs> | null
+  where?: Prisma.LogWhereInput
+  orderBy?: Prisma.LogOrderByWithRelationInput | Prisma.LogOrderByWithRelationInput[]
+  cursor?: Prisma.LogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LogScalarFieldEnum | Prisma.LogScalarFieldEnum[]
 }
 
 /**

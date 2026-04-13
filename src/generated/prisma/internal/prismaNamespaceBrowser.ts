@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Rol: 'Rol',
   User: 'User',
-  Task: 'Task'
+  Task: 'Task',
+  Log: 'Log'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -106,6 +107,19 @@ export const TaskScalarFieldEnum = {
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const LogScalarFieldEnum = {
+  id: 'id',
+  statusCode: 'statusCode',
+  timeStamp: 'timeStamp',
+  path: 'path',
+  error: 'error',
+  errorCode: 'errorCode',
+  session_id: 'session_id'
+} as const
+
+export type LogScalarFieldEnum = (typeof LogScalarFieldEnum)[keyof typeof LogScalarFieldEnum]
 
 
 export const SortOrder = {

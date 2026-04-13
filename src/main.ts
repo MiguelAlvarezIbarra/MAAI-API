@@ -4,16 +4,26 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AllException } from './common/filters/http-exception.filter';
+import { PrismaService } from './prisma.service';
+import cookieParser = require('cookie-parser');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  //Pipe para realizar la validación de forma global
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
-   //Uso de filtros
-   app.useGlobalFilters(new AllException());
+  app.use(cookieParser());
 
-  //Configuración de swagger
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
+
+  const prisma = app.get(PrismaService);
+  app.useGlobalFilters(new AllException(prisma));
+
   const config = new DocumentBuilder()
     .setTitle('API de Tareas')
     .setDescription('API para la gestión de tareas')
@@ -26,16 +36,5 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
-
 }
 bootstrap();
-
-//? POSTGRES
-//! npm i pg
-//! npm i @types/pg
-
-//? MYSQL
-//! npm i mysql2
-//! npm i @types/mysql
-
-//! npm i @nestjs/swagger
